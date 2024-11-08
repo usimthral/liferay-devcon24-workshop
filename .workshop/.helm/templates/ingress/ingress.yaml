@@ -1,0 +1,22 @@
+{{ with .Values.ingress }}
+{{ if .enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: {{ .ip }}
+spec:
+  defaultBackend:
+    service:
+      name: {{ $.Values.webserver.name }}-service
+      port:
+        number: 80
+  {{ if .tlsSecret }}
+  tls:
+    - secretName: {{ .tlsSecret }}
+  {{ end }}
+
+{{ end }}
+{{ end }}

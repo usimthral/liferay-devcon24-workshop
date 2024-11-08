@@ -1,0 +1,12 @@
+apiVersion: v1
+description: Helm chart for Liferay
+name: liferay
+version: 1.0.0
+keywords:
+  - dxp
+  - liferay
+  - java
+  - portal
+  - nginx
+  - helm
+  - docker

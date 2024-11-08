@@ -1,0 +1,33 @@
+// Check GETTING_STARTED.markdown for information regarding usage.
+
+plugins {
+  id "com.github.spotbugs" version "6.0.24"
+  id "org.owasp.dependencycheck" version "10.0.4"
+}
+
+import com.github.spotbugs.snom.Effort
+import com.github.spotbugs.snom.Confidence
+
+subprojects {
+  apply plugin: "com.github.spotbugs"
+  apply plugin: "org.owasp.dependencycheck"
+
+  project.configurations { compile { } }
+
+  dependencies {
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+  }
+
+  spotbugs {
+    ignoreFailures = false
+    showProgress = false
+    effort = Effort.valueOf('DEFAULT')
+    reportLevel = Confidence.valueOf('DEFAULT')
+  }
+
+  dependencyCheck {
+    failBuildOnCVSS=9
+    suppressionFile="owasp-suppressions.xml"
+  }
+
+}

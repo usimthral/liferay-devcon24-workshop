@@ -1,0 +1,20 @@
+{{ with .Values.liferay }}
+{{ if .enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-env-configmap
+  namespace: {{ $.Values.namespace }}
+data:
+  {{ if .config.database.external }}
+  LIFERAY_DL_PERIOD_STORE_PERIOD_IMPL: com.liferay.portal.store.db.DBStore
+  LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_DRIVER_UPPERCASEC_LASS_UPPERCASEN_AME: com.mysql.cj.jdbc.Driver
+  LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_URL: jdbc:mysql://{{ .config.database.host }}:3306/{{ .config.database.name }}?characterEncoding=UTF-8&dontTrackOpenResources=true&holdResultsOpenOverStatementClose=true&serverTimezone=GMT&useFastDateParsing=false&useUnicode=true
+  {{ end }}
+  LIFERAY_UPGRADE_PERIOD_DATABASE_PERIOD_AUTO_PERIOD_RUN: 'true'
+  LIFERAY_DATABASE_PERIOD_INDEXES_PERIOD_UPDATE_PERIOD_ON_PERIOD_STARTUP: 'true'
+  LIFERAY_WEB_PERIOD_SERVER_PERIOD_FORWARDED_PERIOD_PROTOCOL_PERIOD_ENABLED: 'true'
+  LIFERAY_WORKSPACE_ENVIRONMENT: {{ $.Values.environment }}
+
+{{ end }}
+{{ end }}

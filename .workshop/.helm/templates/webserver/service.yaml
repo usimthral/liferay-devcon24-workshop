@@ -1,0 +1,16 @@
+{{ with .Values.webserver }}
+{{ if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+{{ end }}
+{{ end }}

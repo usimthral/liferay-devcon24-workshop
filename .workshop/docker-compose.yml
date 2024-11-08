@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  liferay:
+    image: ${REGISTRY}devcon24-liferay:${BUILD_VERSION:-local}
+    build:
+      context: liferay/build/docker
+    ports:
+      - 8080:8080
+      - 11311:11311
+    volumes:
+      - liferay-data:/opt/liferay/data
+
+  webserver:
+    image: ${REGISTRY}devcon24-webserver:${BUILD_VERSION:-local}
+    build:
+      context: webserver
+    ports:
+      - 80:80
+      - 443:443
+
+volumes:
+  liferay-data:
+

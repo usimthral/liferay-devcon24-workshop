@@ -1,0 +1,35 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDeployment
+commit-message-incrementing: Enabled
+branches:
+  main:
+    mode: ContinuousDeployment
+    label: ''
+    increment: Minor
+    regex: ^(origin\/)?main?$
+    source-branches: []
+    tracks-release-branches: false
+    is-release-branch: false
+    is-main-branch: true
+  uat:
+    mode: ContinuousDeployment
+    label: ''
+    increment: Patch
+    track-merge-target: true
+    regex: ^(origin\/)?uat?$
+    source-branches: ["main"]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+  other:
+    mode: ContinuousDeployment
+    label: ''
+    track-merge-target: true
+    regex: ^(?!\b(origin\/)?(main|uat)\b).+$
+    source-branches: ["uat", "main"]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+ignore:
+  sha: []
+merge-message-formats: {}

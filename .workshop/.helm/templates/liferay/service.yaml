@@ -1,0 +1,17 @@
+{{ with .Values.liferay }}
+{{ if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+  namespace: {{ $.Values.namespace }}
+
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+{{ end }}
+{{ end }}

@@ -1,0 +1,37 @@
+registry: europe-west3-docker.pkg.dev/lrdevcon24/liferay-devcon24/
+imagePullSecret: image-pull-secret
+
+imageVersion: 0.0.0
+
+namespace: lrdevcon24-prod #Changes per environment
+environment: prod #Changes per environment
+
+liferay:
+  enabled: true
+  name: liferay
+  deployment:
+    image: devcon24-liferay
+    imagePullPolicy: Always
+    replicas: 1
+  config:
+    database:
+      external: true
+      host: 10.72.32.3
+      name: liferay-prod #Changes per environment
+    data:
+      useNFS: false
+      server: 0.0.0.0
+      path: /export/prod/data #Changes per environment
+
+webserver:
+  enabled: true
+  name: webserver
+  deployment:
+    image: devcon24-webserver
+    imagePullPolicy: Always
+    replicas: 1
+
+ingress:
+  enabled: true
+  name: ingress
+  ip: prod-ip #Changes per environment
