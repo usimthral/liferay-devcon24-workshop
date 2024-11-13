@@ -1,7 +1,7 @@
 registry: europe-west3-docker.pkg.dev/lrdevcon24/liferay-devcon24/
 imagePullSecret: image-pull-secret
 
-imageVersion: 0.0.0
+imageVersion: 0.1.0
 
 namespace: lrdevcon24-prod #Changes per environment
 environment: prod #Changes per environment
