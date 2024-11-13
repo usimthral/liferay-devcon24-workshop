@@ -1,0 +1,45 @@
+{{ with .Values.webserver }}
+{{ if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}-deployment
+  labels:
+    app: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+
+spec:
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      annotations:
+        checksum/envConfig: {{ include (print $.Template.BasePath "/webserver/configs/webserver-env-config.yaml") $ | sha256sum }}
+      labels:
+        app: {{ .name }}
+    spec:
+      containers:
+        - image: {{ $.Values.registry }}{{ .deployment.image }}:{{ $.Values.imageVersion }}
+          imagePullPolicy: {{ .deployment.imagePullPolicy }}
+          name: {{ .name }}-0
+          livenessProbe:
+            httpGet:
+              path: /nginx/health
+              port: 80
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /nginx/health
+              port: 80
+            initialDelaySeconds: 5
+          ports:
+              - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: {{ .name }}-env-configmap
+      imagePullSecrets:
+        - name: {{ $.Values.imagePullSecret }}
+  replicas: {{ .replicas }}
+{{ end }}
+{{ end }}

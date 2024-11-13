@@ -1,0 +1,87 @@
+{{ with .Values.liferay }}
+{{ if .enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}-deployment
+  labels:
+    app:   {{ .name }}
+  namespace: {{ $.Values.namespace }}
+
+
+spec:
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      annotations:
+        checksum/envConfig: {{ include (print $.Template.BasePath "/liferay/configs/liferay-env-config.yaml") $ | sha256sum }}
+      labels:
+        app: {{ .name }}
+    spec:
+      {{ if .config.data.useNFS }}
+      initContainers:
+        - name: chowner-nfs-mount
+          image: registry.hub.docker.com/library/alpine:3.12.0
+          command: [ "chown", "-R", "1000:1000", "/opt/liferay/data" ]
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ "all" ]
+              add: [ "CHOWN" ]
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: liferay-data
+              mountPath: /opt/liferay/data
+      {{ end }}
+      containers:
+        - image: {{ $.Values.registry }}{{ .deployment.image}}:{{ $.Values.imageVersion }}
+          imagePullPolicy: {{ .deployment.imagePullPolicy }}
+          name: {{ .name }}-0
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          {{ if .config.database.external }}
+          env:
+            - name: LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: DB_USER
+                  name: database-credential-secret
+            - name: LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: database-credential-secret
+          {{ end }}
+          envFrom:
+            - configMapRef:
+                name: {{ .name }}-env-configmap
+          ports:
+            - containerPort: 8080
+          {{ if .config.data.useNFS }}
+          volumeMounts:
+            - name: liferay-data
+              mountPath: /opt/liferay/data
+          {{ end }}
+      {{ if .config.data.useNFS }}
+      volumes:
+        - name: liferay-data
+          nfs:
+            server: {{ .config.data.server }}
+            path: {{ .config.data.path }}
+      {{ end }}
+      imagePullSecrets:
+        - name: {{ $.Values.imagePullSecret }}
+  replicas: {{ .replicas }}
+{{ end }}
+{{ end }}

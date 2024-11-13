@@ -1,0 +1,12 @@
+{{ with .Values.webserver }}
+{{ if .enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-env-configmap
+  namespace: {{ $.Values.namespace }}
+data:
+  WORKSPACE_ENVIRONMENT: {{ $.Values.environment }}
+
+{{ end }}
+{{ end }}

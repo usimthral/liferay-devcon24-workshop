@@ -1,0 +1,12 @@
+More about grype: https://github.com/anchore/grype/blob/main/README.md
+
+# upon scanning, if a severity is found at or above the given severity then the return code will be 1
+# default is unset which will skip this validation (options: negligible, low, medium, high, critical)
+# same as --fail-on ; GRYPE_FAIL_ON_SEVERITY env var
+fail-on-severity: "critical"
+
+ignore:
+  # Critical
+  # Liferay
+  - vulnerability: GHSA-xxxx-xxxx-xxxx
+  - vulnerability: CVE-2024-xxxxx
